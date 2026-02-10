@@ -1,0 +1,6 @@
+[bB]uild
+
+# Nix 
+.direnv
+result
+
