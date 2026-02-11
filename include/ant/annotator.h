@@ -30,7 +30,7 @@ public:
 
   static void init(const std::filesystem::path &ant_dir);
 
-  void addAnnotation(FileLocation &location, std::string data);
+  void addAnnotation(const FileLocation &location, std::string data);
 
-  void removeAnnotation();
+  void removeAnnotation(const FileLocation &location);
 };

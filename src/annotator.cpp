@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <format>
 #include <fstream>
+#include <ios>
 #include <print>
 #include <stdexcept>
 #include <string>
@@ -54,7 +55,7 @@ void Annotator::init(const std::filesystem::path &ant_dir) {
   std::println("Successfully initialized ant in {}", ant_dir.string());
 };
 
-void Annotator::addAnnotation(FileLocation &location, std::string data) {
+void Annotator::addAnnotation(const FileLocation &location, std::string data) {
   if (!std::filesystem::exists(location.getPath())) {
     throw std::runtime_error(
         "Could not add annotation - Path to source does not exist");
@@ -74,4 +75,34 @@ void Annotator::addAnnotation(FileLocation &location, std::string data) {
   annotation.serialize(file);
 };
 
-void Annotator::removeAnnotation() {};
+void Annotator::removeAnnotation(const FileLocation &location) {
+  std::string filepath =
+      std::format("{}/{}.ant", ant_dir, location.getPath().string());
+  if (!std::filesystem::exists(filepath)) {
+    throw std::runtime_error(
+        std::format("No annotations found for file {}", filepath));
+  }
+
+  std::string tempfile = std::format("{}.tmp", filepath);
+  std::ifstream input(filepath);
+  std::ofstream out(tempfile, std::ios::app);
+
+  std::string annotation_line, row_line;
+  while (getline(input, annotation_line) && getline(input, row_line)) {
+    auto separator = row_line.find(" ");
+    if (row_line.substr(0, separator) != "ROW") {
+      throw std::runtime_error(
+          std::format("Invalid line in annotations file, found {}", row_line));
+    }
+
+    int row = stoi(row_line.substr(separator + 1));
+    if (row == location.getRow()) {
+      continue;
+    }
+
+    Annotation anno(annotation_line, FileLocation(location.getPath(), row));
+    anno.serialize(out);
+  }
+
+  std::filesystem::rename(tempfile, filepath);
+};

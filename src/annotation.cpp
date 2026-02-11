@@ -1,4 +1,5 @@
 #include "ant/annotation.h"
+#include <filesystem>
 #include <format>
 #include <print>
 #include <stdexcept>
@@ -18,11 +19,11 @@ FileLocation::FileLocation(const std::string &location_string) {
 FileLocation::FileLocation(const std::filesystem::path &filepath, int row)
     : filepath(filepath), row(row) {};
 
-std::filesystem::path FileLocation::getPath() { return filepath; };
+std::filesystem::path FileLocation::getPath() const { return filepath; };
 
-int FileLocation::getRow() { return row; };
+int FileLocation::getRow() const { return row; };
 
-std::string FileLocation::toString() {
+std::string FileLocation::toString() const {
   return std::format("{}:{}", filepath.string(), row);
 };
 

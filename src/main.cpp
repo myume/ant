@@ -117,7 +117,7 @@ int main(int argc, char **argv) {
           return -1;
         }
         Annotator ant(source, output);
-        ant.removeAnnotation();
+        ant.removeAnnotation(location.value());
         std::println("Successfully removed annotation from {}",
                      location.value().toString());
         break;

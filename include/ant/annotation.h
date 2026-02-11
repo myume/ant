@@ -14,11 +14,11 @@ public:
 
   FileLocation(const std::filesystem::path &filepath, int row);
 
-  std::filesystem::path getPath();
+  std::filesystem::path getPath() const;
 
-  int getRow();
+  int getRow() const;
 
-  std::string toString();
+  std::string toString() const;
 };
 
 class Annotation : public Serializable {
