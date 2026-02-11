@@ -32,7 +32,13 @@ AnnotatorMetadata::deserialize(const std::filesystem::path &ant_dir) {
 };
 
 Annotator::Annotator(std::string source_dir, std::string ant_dir)
-    : source_dir(source_dir), ant_dir(ant_dir) {};
+    : source_dir(source_dir), ant_dir(ant_dir) {
+  if (!std::filesystem::exists(ant_dir)) {
+    throw std::runtime_error(".ant dir not found, has ant been initialized?");
+  }
+
+  meta = AnnotatorMetadata::deserialize(ant_dir);
+};
 
 void Annotator::init(const std::filesystem::path &ant_dir) {
   if (std::filesystem::exists(ant_dir)) {

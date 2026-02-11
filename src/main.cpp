@@ -1,3 +1,4 @@
+#include <exception>
 #include <optional>
 #include <print>
 #include <string_view>
@@ -58,19 +59,23 @@ int main(int argc, char **argv) {
     return -1;
   }
 
-  switch (command.value()) {
-    case Init:
-      Annotator::init(output);
-      break;
-    case Add: {
-      Annotator ant(source, output);
-      ant.addAnnotation();
-      break;
+  try {
+    switch (command.value()) {
+      case Init:
+        Annotator::init(output);
+        break;
+      case Add: {
+        Annotator ant(source, output);
+        ant.addAnnotation();
+        break;
+      }
+      case Remove: {
+        Annotator ant(source, output);
+        ant.removeAnnotation();
+        break;
+      }
     }
-    case Remove: {
-      Annotator ant(source, output);
-      ant.removeAnnotation();
-      break;
-    }
+  } catch (std::exception &e) {
+    std::println("{}", e.what());
   }
 }
