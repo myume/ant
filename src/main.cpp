@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
     if (value == "init") {
       command = Command::Init;
     } else if (value == "add") {
-      if (i < argc - 3) {
+      if (argc <= i + 2) {
         add_help();
         return -1;
       }
@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
       annotation = argv[++i];
       command = Command::Add;
     } else if (value == "rm") {
-      if (i < argc - 2) {
+      if (argc <= i + 1) {
         remove_help();
         return -1;
       }
@@ -79,7 +79,7 @@ int main(int argc, char **argv) {
       }
       command = Command::Remove;
     } else if (value == "list") {
-      if (i < argc - 2) {
+      if (argc <= i + 1) {
         list_help();
         return -1;
       }
@@ -153,6 +153,10 @@ int main(int argc, char **argv) {
         for (auto &annotation : annotations) {
           std::println("{}\n", annotation.display());
         }
+        if (annotations.empty())
+          std::println("No annotations for file {}",
+                       location.value().getPath().string());
+
         break;
       }
     }

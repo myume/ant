@@ -1,12 +1,15 @@
 {
   stdenv,
+  cmake,
   lib,
 }:
 stdenv.mkDerivation {
   pname = "ant";
   version = "0.1.0";
   src = ../.;
+
   buildInputs = [
+    cmake
   ];
 
   meta = {
