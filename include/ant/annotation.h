@@ -24,13 +24,19 @@ public:
 class Annotation : public Serializable {
   std::string annotation;
   FileLocation location;
+  std::string source;
 
 public:
   FileLocation getLocation() const;
 
   Annotation(std::string annnotation, FileLocation location);
+  Annotation(std::string annnotation, FileLocation location,
+             std::string source);
 
   void serialize(std::ofstream &file) override;
+
+  static std::optional<Annotation>
+  deserialize(std::ifstream &file, std::filesystem::path source_path);
 
   std::string display() const;
 };

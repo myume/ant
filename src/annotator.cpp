@@ -112,18 +112,8 @@ Annotator::getAnnotations(const std::filesystem::path &path) {
   std::vector<Annotation> annotations;
 
   std::ifstream input(filepath);
-  std::string annotation_line, row_line;
-  while (getline(input, annotation_line) && getline(input, row_line)) {
-    annotation_line = annotation_line.substr(annotation_line.find(" ") + 1);
-    auto separator = row_line.find(" ");
-    if (row_line.substr(0, separator) != "ROW") {
-      throw std::runtime_error(
-          std::format("Invalid line in annotations file, found {}", row_line));
-    }
-    int row = stoi(row_line.substr(separator + 1));
-
-    Annotation anno(annotation_line, FileLocation(filepath, row));
-    annotations.push_back(anno);
+  while (auto anno = Annotation::deserialize(input, path)) {
+    annotations.push_back(anno.value());
   }
 
   return annotations;
