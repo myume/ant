@@ -13,6 +13,7 @@ static void help() {
   rm          - remove an annotation)#");
   std::println();
   std::println(R"#(Options:
+  --version   - the ant version
   -s          - the source code directory
   -o          - path to output/annotations directory)#");
 }
@@ -42,6 +43,11 @@ int main(int argc, char **argv) {
 
     if (value == "-o") {
       output = argv[i++];
+    }
+
+    if (value == "--version") {
+      std::println("{}", ANT_VERSION);
+      return 0;
     }
   }
 
