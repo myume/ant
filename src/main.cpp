@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <exception>
 #include <optional>
 #include <print>
@@ -150,6 +151,11 @@ int main(int argc, char **argv) {
         }
         Annotator ant(source, output);
         auto annotations = ant.getAnnotations(location.value().getPath());
+        std::stable_sort(annotations.begin(), annotations.end(),
+                         [](const Annotation &a, const Annotation &b) {
+                           return a.getLocation().getRow() <
+                                  b.getLocation().getRow();
+                         });
         for (auto &annotation : annotations) {
           std::println("{}\n", annotation.display());
         }
