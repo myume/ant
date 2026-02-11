@@ -5,8 +5,10 @@
 #include <fstream>
 #include <ios>
 #include <print>
+#include <ranges>
 #include <stdexcept>
 #include <string>
+#include <unordered_set>
 
 AnnotatorMetadata::AnnotatorMetadata() : version(ANT_VERSION) {}
 
@@ -76,34 +78,24 @@ void Annotator::addAnnotation(const FileLocation &location, std::string data) {
 };
 
 void Annotator::removeAnnotation(const FileLocation &location) {
+  auto annotations = getAnnotations(location.getPath());
+
   std::string filepath =
       std::format("{}/{}.ant", ant_dir, location.getPath().string());
-  if (!std::filesystem::exists(filepath)) {
-    throw std::runtime_error(
-        std::format("No annotations found for file {}", filepath));
-  }
 
   std::string tempfile = std::format("{}.tmp", filepath);
-  std::ifstream input(filepath);
   std::ofstream out(tempfile, std::ios::app);
 
-  std::string annotation_line, row_line;
-  while (getline(input, annotation_line) && getline(input, row_line)) {
-    annotation_line = annotation_line.substr(annotation_line.find(" ") + 1);
+  std::unordered_set<int> rows;
+  for (auto &annotation : std::ranges::views::reverse(annotations)) {
 
-    auto separator = row_line.find(" ");
-    if (row_line.substr(0, separator) != "ROW") {
-      throw std::runtime_error(
-          std::format("Invalid line in annotations file, found {}", row_line));
-    }
-
-    int row = stoi(row_line.substr(separator + 1));
-    if (row == location.getRow()) {
+    // dedupe rows
+    int row = annotation.getLocation().getRow();
+    if (rows.contains(row) || row == location.getRow())
       continue;
-    }
+    rows.insert(row);
 
-    Annotation anno(annotation_line, FileLocation(location.getPath(), row));
-    anno.serialize(out);
+    annotation.serialize(out);
   }
 
   std::filesystem::rename(tempfile, filepath);

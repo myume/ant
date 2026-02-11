@@ -35,10 +35,12 @@ void Annotation::serialize(std::ofstream &file) {
   std::println(file, "ROW {}", location.getRow());
 }
 
-std::string Annotation::display() {
+std::string Annotation::display() const {
   std::string res = location.toString();
   res += "\n";
   res += annotation;
 
   return res;
 };
+
+FileLocation Annotation::getLocation() const { return location; };
