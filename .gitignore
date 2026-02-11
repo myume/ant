@@ -1,6 +1,8 @@
 [bB]uild
 .cache
 
+.ant
+
 # Nix 
 .direnv
 result

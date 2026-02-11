@@ -1,7 +1,8 @@
-#include "ant/annotator.h"
 #include <optional>
 #include <print>
 #include <string_view>
+
+#include "ant/annotator.h"
 
 enum Command { Init, Add, Remove };
 
@@ -57,17 +58,19 @@ int main(int argc, char **argv) {
     return -1;
   }
 
-  Annotator ant(source, output);
-
   switch (command.value()) {
-  case Init:
-    ant.init();
-    break;
-  case Add:
-    ant.addAnnotation();
-    break;
-  case Remove:
-    ant.removeAnnotation();
-    break;
+    case Init:
+      Annotator::init(output);
+      break;
+    case Add: {
+      Annotator ant(source, output);
+      ant.addAnnotation();
+      break;
+    }
+    case Remove: {
+      Annotator ant(source, output);
+      ant.removeAnnotation();
+      break;
+    }
   }
 }
