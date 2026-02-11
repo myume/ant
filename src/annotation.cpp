@@ -34,3 +34,11 @@ void Annotation::serialize(std::ofstream &file) {
   std::println(file, "ANNOTATION {}", annotation);
   std::println(file, "ROW {}", location.getRow());
 }
+
+std::string Annotation::display() {
+  std::string res = location.toString();
+  res += "\n";
+  res += annotation;
+
+  return res;
+};

@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <fstream>
 #include <string>
+#include <vector>
 
 class AnnotatorMetadata : public Serializable {
 private:
@@ -33,4 +34,6 @@ public:
   void addAnnotation(const FileLocation &location, std::string data);
 
   void removeAnnotation(const FileLocation &location);
+
+  std::vector<Annotation> getAnnotations(const std::filesystem::path &path);
 };

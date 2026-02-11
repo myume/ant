@@ -6,12 +6,18 @@
 #include "ant/annotation.h"
 #include "ant/annotator.h"
 
-enum Command { Init, Add, Remove };
+enum Command {
+  Init,
+  Add,
+  Remove,
+  List,
+};
 
 static void help() {
   std::println("Usage: ant [options] [command]\n");
   std::println(R"#(Commands:
   init        - initialize the annotations directory
+  list        - list annotations for file
   add         - add an annotation
   rm          - remove an annotation)#");
   std::println();
@@ -21,12 +27,13 @@ static void help() {
   -o          - path to output/annotations directory)#");
 }
 
-void add_help() {
+static void add_help() {
   std::println("Usage: ant add [source_path:line_number] <annotation>\n");
 }
-void remove_help() {
+static void remove_help() {
   std::println("Usage: ant remove [source_path:line_number]\n");
 }
+static void list_help() { std::println("Usage: ant list [source_path]\n"); }
 
 int main(int argc, char **argv) {
   if (argc < 2) {
@@ -71,6 +78,19 @@ int main(int argc, char **argv) {
         return -1;
       }
       command = Command::Remove;
+    } else if (value == "list") {
+      if (i < argc - 2) {
+        list_help();
+        return -1;
+      }
+      try {
+        location = FileLocation(argv[++i], 0);
+      } catch (std::exception &e) {
+        std::println("{}", e.what());
+        list_help();
+        return -1;
+      }
+      command = Command::List;
     }
 
     if (value == "-s") {
@@ -120,6 +140,19 @@ int main(int argc, char **argv) {
         ant.removeAnnotation(location.value());
         std::println("Successfully removed annotation from {}",
                      location.value().toString());
+        break;
+      }
+      case List: {
+        if (!location) {
+          std::println("Missing location argument for remove command");
+          list_help();
+          return -1;
+        }
+        Annotator ant(source, output);
+        auto annotations = ant.getAnnotations(location.value().getPath());
+        for (auto &annotation : annotations) {
+          std::println("{}\n", annotation.display());
+        }
         break;
       }
     }

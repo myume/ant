@@ -29,4 +29,6 @@ public:
   Annotation(std::string annnotation, FileLocation location);
 
   void serialize(std::ofstream &file) override;
+
+  std::string display();
 };
