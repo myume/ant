@@ -1,4 +1,5 @@
 #include "ant/annotator.h"
+#include "ant/annotation.h"
 
 #include <filesystem>
 #include <format>
@@ -58,37 +59,41 @@ void Annotator::init(const std::filesystem::path &ant_dir) {
 };
 
 void Annotator::addAnnotation(const FileLocation &location, std::string data) {
-  if (!std::filesystem::exists(location.getPath())) {
-    throw std::runtime_error(
-        "Could not add annotation - Path to source does not exist");
+  const FileLocation source_location =
+      FileLocation(source_dir / location.getPath(), location.getRow());
+  if (!std::filesystem::exists(source_location.getPath())) {
+    throw std::runtime_error(std::format(
+        "Could not add annotation - Path to source does not exist {}",
+        source_location.getPath().string()));
   }
 
-  if (std::filesystem::is_directory(location.getPath()))
+  if (std::filesystem::is_directory(source_location.getPath()))
     throw std::runtime_error("Cannot add annotation for directory");
 
   std::filesystem::create_directories(ant_dir /
-                                      location.getPath().parent_path());
+                                      source_location.getPath().parent_path());
   std::ofstream file(
-      std::format("{}/{}.ant", ant_dir, location.getPath().string()),
+      std::format("{}/{}.ant", ant_dir, source_location.getPath().string()),
       std::ios::app);
 
-  Annotation annotation(data, location);
+  Annotation annotation(data, source_location);
 
   annotation.serialize(file);
 };
 
 void Annotator::removeAnnotation(const FileLocation &location) {
   auto annotations = getAnnotations(location.getPath());
+  const FileLocation source_location =
+      FileLocation(source_dir / location.getPath(), location.getRow());
 
   std::string filepath =
-      std::format("{}/{}.ant", ant_dir, location.getPath().string());
+      std::format("{}/{}.ant", ant_dir, source_location.getPath().string());
 
   std::string tempfile = std::format("{}.tmp", filepath);
   std::ofstream out(tempfile, std::ios::app);
 
   std::unordered_set<int> rows;
   for (auto &annotation : std::ranges::views::reverse(annotations)) {
-
     // dedupe rows
     int row = annotation.getLocation().getRow();
     if (rows.contains(row) || row == location.getRow())
@@ -112,7 +117,7 @@ Annotator::getAnnotations(const std::filesystem::path &path) {
   std::vector<Annotation> annotations;
 
   std::ifstream input(filepath);
-  while (auto anno = Annotation::deserialize(input, path)) {
+  while (auto anno = Annotation::deserialize(input, source_dir / path)) {
     annotations.push_back(anno.value());
   }
 

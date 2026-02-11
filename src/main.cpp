@@ -95,11 +95,11 @@ int main(int argc, char **argv) {
     }
 
     if (value == "-s") {
-      source = argv[i++];
+      source = argv[++i];
     }
 
     if (value == "-o") {
-      output = argv[i++];
+      output = argv[++i];
     }
 
     if (value == "--version") {
