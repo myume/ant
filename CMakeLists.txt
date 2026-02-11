@@ -14,6 +14,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_library(libant STATIC 
   src/annotator.cpp
+  src/annotation.cpp
 )
 target_include_directories(libant PUBLIC include)
 

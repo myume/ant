@@ -3,6 +3,7 @@
 #include <print>
 #include <string_view>
 
+#include "ant/annotation.h"
 #include "ant/annotator.h"
 
 enum Command { Init, Add, Remove };
@@ -20,6 +21,13 @@ static void help() {
   -o          - path to output/annotations directory)#");
 }
 
+void add_help() {
+  std::println("Usage: ant add [source_path:line_number] <annotation>\n");
+}
+void remove_help() {
+  std::println("Usage: ant remove [source_path:line_number]\n");
+}
+
 int main(int argc, char **argv) {
   if (argc < 2) {
     help();
@@ -28,14 +36,40 @@ int main(int argc, char **argv) {
 
   std::optional<Command> command = std::nullopt;
   std::string source = ".", output = ".ant";
+  std::string annotation;
+  std::optional<FileLocation> location;
 
   for (int i = 1; i < argc; i++) {
     std::string_view value = argv[i];
     if (value == "init") {
       command = Command::Init;
     } else if (value == "add") {
+      if (i < argc - 3) {
+        add_help();
+        return -1;
+      }
+
+      try {
+        location = FileLocation(argv[++i]);
+      } catch (std::exception &e) {
+        std::println("{}", e.what());
+        add_help();
+        return -1;
+      }
+      annotation = argv[++i];
       command = Command::Add;
     } else if (value == "rm") {
+      if (i < argc - 2) {
+        remove_help();
+        return -1;
+      }
+      try {
+        location = FileLocation(argv[++i]);
+      } catch (std::exception &e) {
+        std::println("{}", e.what());
+        remove_help();
+        return -1;
+      }
       command = Command::Remove;
     }
 
@@ -65,17 +99,32 @@ int main(int argc, char **argv) {
         Annotator::init(output);
         break;
       case Add: {
+        if (!location) {
+          std::println("Missing location argument for add command");
+          add_help();
+          return -1;
+        }
         Annotator ant(source, output);
-        ant.addAnnotation();
+        ant.addAnnotation(location.value(), annotation);
+        std::println("Successfully added annotation to {}",
+                     location.value().toString());
         break;
       }
       case Remove: {
+        if (!location) {
+          std::println("Missing location argument for remove command");
+          remove_help();
+          return -1;
+        }
         Annotator ant(source, output);
         ant.removeAnnotation();
+        std::println("Successfully removed annotation from {}",
+                     location.value().toString());
         break;
       }
     }
   } catch (std::exception &e) {
     std::println("{}", e.what());
+    return -1;
   }
 }
