@@ -121,5 +121,9 @@ Annotator::getAnnotations(const std::filesystem::path &path) {
     annotations.push_back(anno.value());
   }
 
+  std::stable_sort(annotations.begin(), annotations.end(),
+                   [](const Annotation &a, const Annotation &b) {
+                     return a.getLocation().getRow() < b.getLocation().getRow();
+                   });
   return annotations;
 };
