@@ -21,6 +21,7 @@
     });
 
     devShells = forAllSystems (pkgs: {
+      node = pkgs.callPackage ./nix/node-shell.nix {};
       default = pkgs.callPackage ./nix/shell.nix {};
     });
   };
