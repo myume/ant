@@ -7,6 +7,20 @@
 #include <stdexcept>
 #include <string>
 
+std::string escape_json_string(std::string s) {
+  std::string escaped = "";
+  for (auto c : s) {
+    switch (c) {
+      case '"':
+        escaped += "\\";
+        break;
+    }
+    escaped += c;
+  }
+
+  return escaped;
+};
+
 FileLocation::FileLocation(const std::string &location_string) {
   auto split = location_string.find(":");
   if (split == std::string::npos) {
@@ -83,8 +97,10 @@ std::string Annotation::display() const {
 
 std::string Annotation::json() const {
   std::string json = "{";
-  json += std::format("\"annotation\": \"{}\",", annotation);
-  json += std::format("\"source\": \"{}\",", source);
+
+  json +=
+      std::format("\"annotation\": \"{}\",", escape_json_string(annotation));
+  json += std::format("\"source\": \"{}\",", escape_json_string(source));
   json += std::format("\"row\": {}", location.getRow());
   json += "}";
   return json;
