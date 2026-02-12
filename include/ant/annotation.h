@@ -39,4 +39,6 @@ public:
   deserialize(std::ifstream &file, std::filesystem::path source_path);
 
   std::string display() const;
+
+  std::string json() const;
 };

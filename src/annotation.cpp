@@ -81,4 +81,13 @@ std::string Annotation::display() const {
   return res;
 };
 
+std::string Annotation::json() const {
+  std::string json = "{";
+  json += std::format("\"annotation\": \"{}\",", annotation);
+  json += std::format("\"source\": \"{}\",", source);
+  json += std::format("\"row\": {}", location.getRow());
+  json += "}";
+  return json;
+}
+
 FileLocation Annotation::getLocation() const { return location; };

@@ -1,7 +1,9 @@
 #include <exception>
 #include <optional>
 #include <print>
+#include <string>
 #include <string_view>
+#include <vector>
 
 #include "ant/annotation.h"
 #include "ant/annotator.h"
@@ -14,7 +16,7 @@ enum Command {
 };
 
 static void help() {
-  std::println("Usage: ant [options] [command]\n");
+  std::println("Usage: ant [command] [options]\n");
   std::println(R"#(Commands:
   init        - initialize the annotations directory
   list        - list annotations for file
@@ -23,6 +25,7 @@ static void help() {
   std::println();
   std::println(R"#(Options:
   --version   - the ant version
+  --json      - output json
   -s          - the source code directory
   -o          - path to output/annotations directory)#");
 }
@@ -35,6 +38,29 @@ static void remove_help() {
 }
 static void list_help() { std::println("Usage: ant list [source_path]\n"); }
 
+void printAnnotations(const std::vector<Annotation> annotations,
+                      bool json = false) {
+  if (json) {
+    std::println("[");
+  }
+  int i = 0;
+  for (auto &annotation : annotations) {
+    std::string output = annotation.display() + "\n";
+    if (json) {
+      output = "  " + annotation.json();
+      if (i < annotations.size() - 1) {
+        output += ",";
+      }
+    }
+
+    std::println("{}", output);
+    i += 1;
+  }
+  if (json) {
+    std::println("]");
+  }
+}
+
 int main(int argc, char **argv) {
   if (argc < 2) {
     help();
@@ -45,6 +71,7 @@ int main(int argc, char **argv) {
   std::string source = ".", output = ".ant";
   std::string annotation;
   std::optional<FileLocation> location;
+  bool json = false;
 
   for (int i = 1; i < argc; i++) {
     std::string_view value = argv[i];
@@ -105,6 +132,10 @@ int main(int argc, char **argv) {
       std::println("{}", ANT_VERSION);
       return 0;
     }
+
+    if (value == "--json") {
+      json = true;
+    }
   }
 
   if (!command) {
@@ -150,12 +181,13 @@ int main(int argc, char **argv) {
         }
         Annotator ant(source, output);
         auto annotations = ant.getAnnotations(location.value().getPath());
-        for (auto &annotation : annotations) {
-          std::println("{}\n", annotation.display());
-        }
-        if (annotations.empty())
+        if (annotations.empty()) {
           std::println("No annotations for file {}",
                        location.value().getPath().string());
+          return -1;
+        }
+
+        printAnnotations(annotations, json);
 
         break;
       }
