@@ -21,7 +21,9 @@ const annotationText = vscode.window.createTextEditorDecorationType({
 });
 
 function getTruncatedText(text: string, maxLength: number): string {
-  if (text.length <= maxLength) return text;
+  if (text.length <= maxLength) {
+    return text;
+  }
   return text.substring(0, maxLength - 3) + "...";
 }
 
@@ -43,7 +45,7 @@ const getAnnotations = (
     console.error(ant.error);
     return [];
   }
-  if (ant.status != 0) {
+  if (ant.status !== 0) {
     vscode.window.showInformationMessage(ant.stdout.toString());
     return [];
   }
@@ -174,16 +176,17 @@ export function activate(context: vscode.ExtensionContext) {
         return;
       }
       vscode.window.showInformationMessage(ant.stdout.toString());
-      if (ant.status != 0) {
+      if (ant.status !== 0) {
         return;
       }
 
-      if (vscode.window.activeTextEditor)
+      if (vscode.window.activeTextEditor) {
         refreshAnnotations(
           vscode.window.activeTextEditor,
           binaryPath,
           sourceRoot,
         );
+      }
     },
   );
 
@@ -204,16 +207,17 @@ export function activate(context: vscode.ExtensionContext) {
         return;
       }
       vscode.window.showInformationMessage(ant.stdout.toString());
-      if (ant.status != 0) {
+      if (ant.status !== 0) {
         return;
       }
 
-      if (vscode.window.activeTextEditor)
+      if (vscode.window.activeTextEditor) {
         refreshAnnotations(
           vscode.window.activeTextEditor,
           binaryPath,
           sourceRoot,
         );
+      }
     },
   );
 
