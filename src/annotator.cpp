@@ -38,7 +38,7 @@ AnnotatorMetadata::deserialize(const std::filesystem::path &ant_dir) {
 
 Annotator::Annotator(const std::string &source_dir, const std::string &ant_dir)
     : source_dir(source_dir), ant_dir(ant_dir + "/.ant") {
-  if (!std::filesystem::exists(ant_dir)) {
+  if (!std::filesystem::exists(this->ant_dir)) {
     throw std::runtime_error(".ant dir not found, has ant been initialized?");
   }
 
@@ -103,11 +103,15 @@ void Annotator::removeAnnotation(const FileLocation &location) {
 
 std::vector<Annotation>
 Annotator::getAnnotations(const std::filesystem::path &path) {
+  std::string relative_path = path.string();
+  if (path.string().starts_with(ant_dir.parent_path().string())) {
+    relative_path =
+        path.string().substr(ant_dir.parent_path().string().size() + 1);
+  }
   std::string filepath =
-      std::format("{}/{}.ant", ant_dir.string(), path.string());
+      std::format("{}/{}.ant", ant_dir.string(), relative_path);
   if (!std::filesystem::exists(filepath)) {
-    throw std::runtime_error(
-        std::format("No annotations found for file {}", filepath));
+    throw std::runtime_error(std::format("No annotations found for file"));
   }
 
   std::vector<Annotation> raw_annotations;
