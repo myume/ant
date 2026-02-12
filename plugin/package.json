@@ -16,6 +16,14 @@
       {
         "command": "ant.toggle",
         "title": "Ant: Toggle Annotations"
+      },
+      {
+        "command": "ant.add",
+        "title": "Ant: Add Annotation"
+      },
+      {
+        "command": "ant.remove",
+        "title": "Ant: Remove Annotation"
       }
     ],
     "configuration": {
@@ -23,8 +31,7 @@
       "properties": {
         "ant.binaryPath": {
           "type": "string",
-          "description": "Path to the ant binary",
-          "format": "path"
+          "description": "Path to the ant binary"
         }
       }
     }
