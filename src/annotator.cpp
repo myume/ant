@@ -104,7 +104,7 @@ void Annotator::removeAnnotation(const FileLocation &location) {
 std::vector<Annotation>
 Annotator::getAnnotations(const std::filesystem::path &path) {
   if (std::filesystem::is_directory(source_dir / path) ||
-      std::filesystem::exists(source_dir / path)) {
+      !std::filesystem::exists(source_dir / path)) {
     throw std::runtime_error(std::format("No annotations found for file"));
   }
 
