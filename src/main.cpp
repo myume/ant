@@ -24,6 +24,7 @@ static void help() {
   rm          - remove an annotation)#");
   std::println();
   std::println(R"#(Options:
+  --help      - show this menu
   --version   - the ant version
   --json      - output json
   -s          - the source code directory
@@ -75,6 +76,12 @@ int main(int argc, char **argv) {
 
   for (int i = 1; i < argc; i++) {
     std::string_view value = argv[i];
+
+    if (value == "--help") {
+      help();
+      return 0;
+    }
+
     if (value == "init") {
       command = Command::Init;
     } else if (value == "add") {
