@@ -61,23 +61,27 @@ const refreshAnnotations = (
     return;
   }
 
+  const annotations = getAnnotations(
+    editor.document.uri.fsPath,
+    binaryPath,
+    sourceRoot,
+  );
+
   editor.setDecorations(
     annotationText,
-    getAnnotations(editor.document.uri.fsPath, binaryPath, sourceRoot).map(
-      (annotation) => {
-        const line = editor.document.lineAt(annotation.row - 1);
-        const range = new vscode.Range(line.range.end, line.range.end);
-        return {
-          range,
-          hoverMessage: new vscode.MarkdownString(annotation.annotation),
-          renderOptions: {
-            after: {
-              contentText: getTruncatedText(annotation.annotation, 80),
-            },
+    annotations.map((annotation) => {
+      const line = editor.document.lineAt(annotation.row - 1);
+      const range = new vscode.Range(line.range.end, line.range.end);
+      return {
+        range,
+        hoverMessage: new vscode.MarkdownString(annotation.annotation),
+        renderOptions: {
+          after: {
+            contentText: getTruncatedText(annotation.annotation, 80),
           },
-        };
-      },
-    ),
+        },
+      };
+    }),
   );
 };
 
@@ -155,15 +159,6 @@ export function activate(context: vscode.ExtensionContext) {
         return;
       }
 
-      console.log([
-        "-s",
-        sourceRoot,
-        "-o",
-        sourceRoot,
-        "add",
-        `${file.fsPath.replace(sourceRoot + "/", "")}:${row}`,
-        annotation,
-      ]);
       const ant = spawnSync(binaryPath ?? "ant", [
         "-s",
         sourceRoot,

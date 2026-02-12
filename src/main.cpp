@@ -188,11 +188,11 @@ int main(int argc, char **argv) {
         }
         Annotator ant(source, output);
         auto annotations = ant.getAnnotations(location.value().getPath());
-        if (annotations.empty()) {
-          std::println("No annotations for file {}",
-                       location.value().getPath().string());
-          return -1;
-        }
+        // if (annotations.empty()) {
+        //   std::println("No annotations for file {}",
+        //                location.value().getPath().string());
+        //   return -1;
+        // }
 
         printAnnotations(annotations, json);
 
