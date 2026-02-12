@@ -14,10 +14,20 @@
   "contributes": {
     "commands": [
       {
-        "command": "ant.helloWorld",
-        "title": "Hello World"
+        "command": "ant.toggle",
+        "title": "Ant: Toggle Annotations"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Ant",
+      "properties": {
+        "ant.binaryPath": {
+          "type": "string",
+          "description": "Path to the ant binary",
+          "format": "path"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
