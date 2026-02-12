@@ -37,12 +37,12 @@ AnnotatorMetadata::deserialize(const std::filesystem::path &ant_dir) {
 };
 
 Annotator::Annotator(const std::string &source_dir, const std::string &ant_dir)
-    : source_dir(source_dir), ant_dir(ant_dir) {
+    : source_dir(source_dir), ant_dir(ant_dir + "/.ant") {
   if (!std::filesystem::exists(ant_dir)) {
     throw std::runtime_error(".ant dir not found, has ant been initialized?");
   }
 
-  meta = AnnotatorMetadata::deserialize(ant_dir);
+  meta = AnnotatorMetadata::deserialize(this->ant_dir);
 };
 
 void Annotator::init(const std::filesystem::path &ant_dir) {
@@ -73,9 +73,9 @@ void Annotator::addAnnotation(const FileLocation &location, std::string data) {
 
   std::filesystem::create_directories(ant_dir /
                                       source_location.getPath().parent_path());
-  std::ofstream file(
-      std::format("{}/{}.ant", ant_dir, source_location.getPath().string()),
-      std::ios::app);
+  std::ofstream file(std::format("{}/{}.ant", ant_dir.string(),
+                                 source_location.getPath().string()),
+                     std::ios::app);
 
   Annotation annotation(data, source_location);
 
@@ -87,8 +87,8 @@ void Annotator::removeAnnotation(const FileLocation &location) {
   const FileLocation source_location =
       FileLocation(source_dir / location.getPath(), location.getRow());
 
-  std::string filepath =
-      std::format("{}/{}.ant", ant_dir, source_location.getPath().string());
+  std::string filepath = std::format("{}/{}.ant", ant_dir.string(),
+                                     source_location.getPath().string());
 
   std::vector<Annotation> filtered;
   for (const auto &annotation : annotations) {
@@ -103,7 +103,8 @@ void Annotator::removeAnnotation(const FileLocation &location) {
 
 std::vector<Annotation>
 Annotator::getAnnotations(const std::filesystem::path &path) {
-  std::string filepath = std::format("{}/{}.ant", ant_dir, path.string());
+  std::string filepath =
+      std::format("{}/{}.ant", ant_dir.string(), path.string());
   if (!std::filesystem::exists(filepath)) {
     throw std::runtime_error(
         std::format("No annotations found for file {}", filepath));

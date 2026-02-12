@@ -21,16 +21,15 @@ public:
 
 class Annotator {
 private:
-  std::string source_dir;
-  std::string ant_dir;
+  std::filesystem::path source_dir;
+  std::filesystem::path ant_dir;
   AnnotatorMetadata meta;
 
   void writeAnnotations(const std::vector<Annotation> &annotations,
                         const std::filesystem::path &path);
 
 public:
-  Annotator(const std::string &source_path,
-            const std::string &ant_dir = ".ant");
+  Annotator(const std::string &source_path, const std::string &ant_dir);
 
   static void init(const std::filesystem::path &ant_dir);
 

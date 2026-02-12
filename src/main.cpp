@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
   }
 
   std::optional<Command> command = std::nullopt;
-  std::string source = ".", output = ".ant";
+  std::string source = ".", output = ".";
   std::string annotation;
   std::optional<FileLocation> location;
   bool json = false;
