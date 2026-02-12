@@ -33,7 +33,7 @@ public:
   Annotation(std::string annnotation, FileLocation location,
              std::string source);
 
-  void serialize(std::ofstream &file) override;
+  void serialize(std::ofstream &file) const override;
 
   static std::optional<Annotation>
   deserialize(std::ifstream &file, std::filesystem::path source_path);

@@ -2,5 +2,5 @@
 
 class Serializable {
 public:
-  virtual void serialize(std::ofstream &file) = 0;
+  virtual void serialize(std::ofstream &file) const = 0;
 };

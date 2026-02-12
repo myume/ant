@@ -43,7 +43,7 @@ Annotation::Annotation(std::string annotation, FileLocation location,
                        std::string hash)
     : annotation(annotation), location(location), source(hash) {};
 
-void Annotation::serialize(std::ofstream &file) {
+void Annotation::serialize(std::ofstream &file) const {
   std::println(file, "ANNOTATION {}", annotation);
   std::println(file, "HASH {}", source);
   std::println(file, "ROW {}", location.getRow());

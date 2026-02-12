@@ -14,7 +14,7 @@ private:
 public:
   AnnotatorMetadata();
 
-  void serialize(std::ofstream &file) override;
+  void serialize(std::ofstream &file) const override;
 
   static AnnotatorMetadata deserialize(const std::filesystem::path &ant_dir);
 };
@@ -24,6 +24,9 @@ private:
   std::string source_dir;
   std::string ant_dir;
   AnnotatorMetadata meta;
+
+  void writeAnnotations(const std::vector<Annotation> &annotations,
+                        const std::filesystem::path &path);
 
 public:
   Annotator(const std::string &source_path,

@@ -10,10 +10,11 @@
 #include <stdexcept>
 #include <string>
 #include <unordered_set>
+#include <vector>
 
 AnnotatorMetadata::AnnotatorMetadata() : version(ANT_VERSION) {}
 
-void AnnotatorMetadata::serialize(std::ofstream &file) {
+void AnnotatorMetadata::serialize(std::ofstream &file) const {
   std::println(file, "VERSION {}", version);
 }
 
@@ -89,21 +90,15 @@ void Annotator::removeAnnotation(const FileLocation &location) {
   std::string filepath =
       std::format("{}/{}.ant", ant_dir, source_location.getPath().string());
 
-  std::string tempfile = std::format("{}.tmp", filepath);
-  std::ofstream out(tempfile, std::ios::app);
+  std::vector<Annotation> filtered;
+  for (const auto &annotation : annotations) {
+    if (annotation.getLocation().getRow() != location.getRow()) {
+      filtered.push_back(annotation);
+    }
+  };
 
-  std::unordered_set<int> rows;
-  for (auto &annotation : std::ranges::views::reverse(annotations)) {
-    // dedupe rows
-    int row = annotation.getLocation().getRow();
-    if (rows.contains(row) || row == location.getRow())
-      continue;
-    rows.insert(row);
-
-    annotation.serialize(out);
-  }
-
-  std::filesystem::rename(tempfile, filepath);
+  if (filtered.size() != annotations.size())
+    writeAnnotations(filtered, filepath);
 };
 
 std::vector<Annotation>
@@ -114,16 +109,39 @@ Annotator::getAnnotations(const std::filesystem::path &path) {
         std::format("No annotations found for file {}", filepath));
   }
 
-  std::vector<Annotation> annotations;
-
+  std::vector<Annotation> raw_annotations;
   std::ifstream input(filepath);
   while (auto anno = Annotation::deserialize(input, source_dir / path)) {
-    annotations.push_back(anno.value());
+    raw_annotations.push_back(anno.value());
+  }
+
+  std::vector<Annotation> annotations;
+  std::unordered_set<int> rows;
+  for (auto anno : std::ranges::views::reverse(raw_annotations)) {
+    if (!rows.contains(anno.getLocation().getRow())) {
+      rows.insert(anno.getLocation().getRow());
+      annotations.push_back(anno);
+    }
   }
 
   std::stable_sort(annotations.begin(), annotations.end(),
                    [](const Annotation &a, const Annotation &b) {
                      return a.getLocation().getRow() < b.getLocation().getRow();
                    });
+
+  if (annotations.size() != raw_annotations.size())
+    writeAnnotations(annotations, filepath);
+
   return annotations;
+};
+
+void Annotator::writeAnnotations(const std::vector<Annotation> &annotations,
+                                 const std::filesystem::path &filepath) {
+  std::string tempfile = std::format("{}.tmp", filepath.string());
+  std::ofstream out(tempfile, std::ios::app);
+  for (auto &annotation : annotations) {
+    annotation.serialize(out);
+  }
+
+  std::filesystem::rename(tempfile, filepath);
 };
