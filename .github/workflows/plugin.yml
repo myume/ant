@@ -1,0 +1,26 @@
+name: VSCode Plugin
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./plugin
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup node
+      uses: actions/setup-node@v6
+    
+    - name: NPM Install
+      run: npm ci
+
+    - name: Compile TS
+      run: npm run package
