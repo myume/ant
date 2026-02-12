@@ -18,17 +18,17 @@ enum Command {
 static void help() {
   std::println("Usage: ant [command] [options]\n");
   std::println(R"#(Commands:
-  init        - initialize the annotations directory
-  list        - list annotations for file
-  add         - add an annotation
-  rm          - remove an annotation)#");
+  init             - initialize the annotations directory
+  list             - list annotations for file
+  add              - add an annotation
+  remove          - remove an annotation)#");
   std::println();
   std::println(R"#(Options:
-  --help      - show this menu
-  --version   - the ant version
-  --json      - output json
-  -s          - the source code directory
-  -o          - path to output/annotations directory)#");
+  --help           - show this menu
+  --version        - the ant version
+  --json           - output json
+  -s               - the source code directory
+  -o               - path to output/annotations directory)#");
 }
 
 static void add_help() {
@@ -99,7 +99,7 @@ int main(int argc, char **argv) {
       }
       annotation = argv[++i];
       command = Command::Add;
-    } else if (value == "rm") {
+    } else if (value == "remove") {
       if (argc <= i + 1) {
         remove_help();
         return -1;
