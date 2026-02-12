@@ -73,9 +73,9 @@ void Annotator::addAnnotation(const FileLocation &location, std::string data) {
 
   std::filesystem::create_directories(ant_dir /
                                       source_location.getPath().parent_path());
-  std::ofstream file(std::format("{}/{}.ant", ant_dir.string(),
-                                 source_location.getPath().string()),
-                     std::ios::app);
+  std::ofstream file(
+      ant_dir / std::format("{}.ant", source_location.getPath().string()),
+      std::ios::app);
 
   Annotation annotation(data, source_location);
 
@@ -87,8 +87,8 @@ void Annotator::removeAnnotation(const FileLocation &location) {
   const FileLocation source_location =
       FileLocation(source_dir / location.getPath(), location.getRow());
 
-  std::string filepath = std::format("{}/{}.ant", ant_dir.string(),
-                                     source_location.getPath().string());
+  std::string filepath =
+      ant_dir / std::format("{}.ant", source_location.getPath().string());
 
   std::vector<Annotation> filtered;
   for (const auto &annotation : annotations) {
@@ -108,8 +108,7 @@ Annotator::getAnnotations(const std::filesystem::path &path) {
     relative_path =
         path.string().substr(ant_dir.parent_path().string().size() + 1);
   }
-  std::string filepath =
-      std::format("{}/{}.ant", ant_dir.string(), relative_path);
+  std::string filepath = ant_dir / std::format("{}.ant", relative_path);
   if (!std::filesystem::exists(filepath)) {
     throw std::runtime_error(std::format("No annotations found for file"));
   }
