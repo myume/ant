@@ -87,7 +87,8 @@ void Annotator::removeAnnotation(const FileLocation &location) {
   auto annotations = getAnnotations(location.getPath());
   const std::filesystem::path source_path = source_dir / location.getPath();
 
-  std::string filepath = ant_dir / std::format("{}.ant", source_path.string());
+  std::string filepath =
+      ant_dir / std::format("{}.ant", location.getPath().string());
 
   std::vector<Annotation> filtered;
   for (const auto &annotation : annotations) {
