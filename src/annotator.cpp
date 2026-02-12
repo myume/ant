@@ -103,16 +103,17 @@ void Annotator::removeAnnotation(const FileLocation &location) {
 
 std::vector<Annotation>
 Annotator::getAnnotations(const std::filesystem::path &path) {
-  if (std::filesystem::is_directory(source_dir / path) ||
-      !std::filesystem::exists(source_dir / path)) {
-    throw std::runtime_error(std::format("No annotations found for file"));
-  }
 
   std::string relative_path = path.string();
-  std::string prefix = ant_dir.parent_path().string();
+  std::string prefix = source_dir.parent_path().string();
   if (prefix.size() + 1 < path.string().size() &&
       path.string().starts_with(prefix)) {
     relative_path = path.string().substr(prefix.size() + 1);
+  }
+  if (std::filesystem::is_directory(source_dir / relative_path) ||
+      !std::filesystem::exists(source_dir / relative_path)) {
+    std::println("{}", (source_dir / path).string());
+    throw std::runtime_error(std::format("No annotations found for file"));
   }
   std::string filepath = ant_dir / std::format("{}.ant", relative_path);
 
