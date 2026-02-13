@@ -3,6 +3,8 @@
 code annotation tool (i wanted cat as the acronym but it wouldn't work for
 [obvious reasons](https://en.wikipedia.org/wiki/Cat_(Unix)))
 
+<img width="2832" height="1800" alt="image" src="https://github.com/user-attachments/assets/68ff55b1-e2a0-495f-b97c-8103bde5e4fd" />
+
 ## Usage
 
 There is a cli tool, library, and vscode plugin.
