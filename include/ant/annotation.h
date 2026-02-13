@@ -29,9 +29,8 @@ class Annotation : public Serializable {
 public:
   FileLocation getLocation() const;
 
-  Annotation(std::string annnotation, FileLocation location);
-  Annotation(std::string annnotation, FileLocation location,
-             std::string source);
+  Annotation(std::string annotation, FileLocation location);
+  Annotation(std::string annotation, FileLocation location, std::string source);
 
   void serialize(std::ofstream &file) const override;
 
