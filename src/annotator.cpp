@@ -62,11 +62,13 @@ void Annotator::init(const std::filesystem::path &ant_dir) {
 
 void Annotator::addAnnotation(const FileLocation &location, std::string data) {
   const std::filesystem::path source_path = source_dir / location.getPath();
+#ifndef BENCHMARK_MODE
   if (!std::filesystem::exists(source_path)) {
     throw std::runtime_error(std::format(
         "Could not add annotation - Path to source does not exist {}",
         source_path.string()));
   }
+#endif
 
   if (std::filesystem::is_directory(source_path))
     throw std::runtime_error("Cannot add annotation for directory");
@@ -104,8 +106,10 @@ void Annotator::removeAnnotation(const FileLocation &location) {
 std::vector<Annotation>
 Annotator::getAnnotations(const std::filesystem::path &relative_path) {
   std::filesystem::path source_path = source_dir / relative_path;
+#ifndef BENCHMARK_MODE
   if (!std::filesystem::exists(source_path))
     throw std::runtime_error(std::format("File does not exist"));
+#endif
   if (std::filesystem::is_directory(source_path))
     throw std::runtime_error(
         std::format("Cannot get annotations for directory"));

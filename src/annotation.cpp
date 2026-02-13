@@ -2,6 +2,7 @@
 #include <filesystem>
 #include <format>
 #include <fstream>
+#include <iostream>
 #include <optional>
 #include <print>
 #include <stdexcept>
@@ -45,12 +46,16 @@ std::string FileLocation::toString() const {
 
 Annotation::Annotation(std::string annotation, FileLocation location)
     : annotation(annotation), location(location) {
+#ifndef BENCHMARK_MODE
   std::ifstream file(location.getPath());
   for (int i = 0; i < location.getRow(); i++) {
     if (!getline(file, source)) {
-      throw std::runtime_error("No such line find in source file");
+      throw std::runtime_error(std::format("Line {} does not exist in {}",
+                                           location.getRow(),
+                                           location.getPath().string()));
     };
   }
+#endif
 };
 
 Annotation::Annotation(std::string annotation, FileLocation location,

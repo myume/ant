@@ -12,10 +12,19 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+option(BENCHMARK "Compile for Benchmarking" OFF)
+
 add_library(libant STATIC 
   src/annotator.cpp
   src/annotation.cpp
 )
 target_include_directories(libant PUBLIC include)
 
+if(BENCHMARK)
+  target_compile_definitions(libant PRIVATE BENCHMARK_MODE)
+  target_compile_options(libant PRIVATE -O3)
+endif()
+
 add_subdirectory(src)
+
+add_subdirectory(bench)

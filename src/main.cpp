@@ -21,7 +21,7 @@ static void help() {
   init             - initialize the annotations directory
   list             - list annotations for file
   add              - add an annotation
-  remove          - remove an annotation)#");
+  remove           - remove an annotation)#");
   std::println();
   std::println(R"#(Options:
   --help           - show this menu
